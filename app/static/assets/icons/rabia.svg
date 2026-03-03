@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">Icono rabia</title>
+  <desc id="desc">Escudo sanitario con símbolo de alerta</desc>
+  <path d="M32 6l20 8v15c0 14-8 24-20 29C20 53 12 43 12 29V14l20-8z" fill="#0f172a"/>
+  <circle cx="32" cy="30" r="12" fill="#b91c1c"/>
+  <rect x="29.5" y="22" width="5" height="14" rx="2.5" fill="#fff"/>
+  <circle cx="32" cy="42" r="3" fill="#fff"/>
+</svg>

@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Inicio - Mapas de Zoonosis</title>
+    <style>
+      :root {
+        color-scheme: light;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #f8fafc;
+        color: #0f172a;
+      }
+
+      .page {
+        min-height: 100vh;
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+      }
+
+      .hero {
+        background: #0f172a;
+        color: #ffffff;
+        padding: 22px;
+      }
+
+      .hero h1 {
+        margin: 0;
+        font-size: 28px;
+      }
+
+      .hero p {
+        margin: 8px 0 0;
+        font-size: 15px;
+        opacity: 0.95;
+      }
+
+      .content {
+        width: min(980px, 92vw);
+        margin: 28px auto;
+        display: grid;
+        gap: 16px;
+      }
+
+      .cards {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 18px;
+        display: grid;
+        justify-items: center;
+        text-align: center;
+      }
+
+      .card h2 {
+        margin: 0;
+        font-size: 20px;
+      }
+
+      .icon-link {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 220px;
+        height: 120px;
+        border: 1px solid #cbd5e1;
+        border-radius: 12px;
+        background: #ffffff;
+        text-decoration: none;
+        overflow: hidden;
+      }
+
+      .icon-link img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .icon-link:hover {
+        border-color: #94a3b8;
+      }
+
+      .icon-row {
+        margin-bottom: 16px;
+      }
+
+      .card p {
+        margin: 10px 0 16px;
+        color: #334155;
+        font-size: 14px;
+        line-height: 1.5;
+      }
+
+      .footer {
+        border-top: 1px solid #e2e8f0;
+        background: #ffffff;
+        color: #475569;
+        font-size: 13px;
+        padding: 10px 16px;
+      }
+
+      @media (max-width: 900px) {
+        .cards {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <header class="hero">
+        <h1>Mapas de Zoonosis</h1>
+        <p>Selecciona el módulo que deseas consultar.</p>
+      </header>
+
+      <main class="content">
+        <section class="cards">
+          <article class="card">
+            <h2>Mapa de casos de rabia</h2>
+            <p>Visualización actual de casos y cobertura de vacunación por municipio en Hidalgo.</p>
+            <div class="icon-row">
+              <a class="icon-link" href="/rabia" aria-label="Entrar al mapa de rabia">
+                <img src="/static/assets/icons/rabia.png" alt="Acceso al mapa de rabia" />
+              </a>
+            </div>
+          </article>
+
+          <article class="card">
+            <h2>Mapa de casos de gusano barrenador</h2>
+            <p>Sección en desarrollo.</p>
+            <div class="icon-row">
+              <a
+                class="icon-link"
+                href="/gusano-barrenador"
+                aria-label="Entrar al mapa de gusano barrenador"
+              >
+                <img
+                  src="/static/assets/icons/barrenador.png"
+                  alt="Acceso al mapa de gusano barrenador"
+                />
+              </a>
+            </div>
+          </article>
+        </section>
+      </main>
+
+      <footer class="footer">Plataforma de visualización geoespacial · 2026</footer>
+    </div>
+  </body>
+  </html>

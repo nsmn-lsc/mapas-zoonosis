@@ -40,6 +40,14 @@
         background: #0f172a;
         color: #ffffff;
         padding: 18px 22px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .hero-text {
+        min-width: 0;
       }
 
       .hero h1 {
@@ -51,6 +59,21 @@
         margin: 6px 0 0;
         font-size: 14px;
         opacity: 0.95;
+      }
+
+      .back-btn {
+        text-decoration: none;
+        border: 1px solid #cbd5e1;
+        background: #ffffff;
+        color: #0f172a;
+        border-radius: 8px;
+        padding: 8px 12px;
+        font-size: 14px;
+        white-space: nowrap;
+      }
+
+      .back-btn:hover {
+        background: #f8fafc;
       }
 
       .content {
@@ -339,8 +362,11 @@
   <body>
     <div class="page">
       <header class="hero">
-        <h1>Mapa de Rabia 2025 - Hidalgo</h1>
-        <p>Visualización de contorno estatal, municipios y casos confirmados.</p>
+        <div class="hero-text">
+          <h1>Mapa de Rabia 2025 - Hidalgo</h1>
+          <p>Visualización de contorno estatal, municipios y casos confirmados.</p>
+        </div>
+        <a class="back-btn" href="/">← Regresar al inicio</a>
       </header>
 
       <main class="content">
