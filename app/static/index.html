@@ -1,0 +1,838 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mapa de Rabia - Hidalgo</title>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin=""
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css"
+    />
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        font-family: Arial, sans-serif;
+        background: #f8fafc;
+      }
+
+      .page {
+        width: 100%;
+        height: 100%;
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+      }
+
+      .hero {
+        background: #0f172a;
+        color: #ffffff;
+        padding: 18px 22px;
+      }
+
+      .hero h1 {
+        margin: 0;
+        font-size: 24px;
+      }
+
+      .hero p {
+        margin: 6px 0 0;
+        font-size: 14px;
+        opacity: 0.95;
+      }
+
+      .content {
+        min-height: 0;
+        display: grid;
+        grid-template-columns: 280px 1fr;
+        gap: 14px;
+        padding: 14px;
+      }
+
+      .sidebar {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 14px;
+        overflow: auto;
+      }
+
+      .sidebar h2 {
+        margin: 0 0 10px;
+        font-size: 18px;
+        color: #0f172a;
+      }
+
+      .sidebar ul {
+        margin: 0;
+        padding-left: 18px;
+      }
+
+      .sidebar li {
+        margin-bottom: 8px;
+        font-size: 14px;
+        color: #334155;
+      }
+
+      .stat {
+        margin-top: 14px;
+        padding: 10px;
+        border-radius: 8px;
+        background: #f1f5f9;
+        font-size: 14px;
+        color: #0f172a;
+      }
+
+      .legend {
+        margin-top: 12px;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 10px;
+        background: #ffffff;
+      }
+
+      .legend h3 {
+        margin: 0 0 8px;
+        font-size: 14px;
+        color: #0f172a;
+      }
+
+      .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 6px;
+        font-size: 13px;
+        color: #334155;
+      }
+
+      .legend-item:last-child {
+        margin-bottom: 0;
+      }
+
+      .legend-color {
+        width: 14px;
+        height: 14px;
+        border-radius: 3px;
+        border: 1px solid #0f172a33;
+      }
+
+      .toggle-btn {
+        margin-top: 10px;
+        width: 100%;
+        border: 1px solid #cbd5e1;
+        background: #ffffff;
+        color: #0f172a;
+        border-radius: 8px;
+        padding: 10px 12px;
+        font-size: 14px;
+        cursor: pointer;
+      }
+
+      .toggle-btn:hover {
+        background: #f8fafc;
+      }
+
+      .modal-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.65);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 2000;
+        padding: 16px;
+      }
+
+      .modal-backdrop.active {
+        display: flex;
+      }
+
+      .modal-card {
+        width: min(980px, 96vw);
+        height: min(720px, 92vh);
+        background: #ffffff;
+        border-radius: 12px;
+        overflow: hidden;
+        border: 2px solid #cbd5e1;
+        display: grid;
+        grid-template-rows: auto 1fr;
+      }
+
+      .modal-card.border-sobresaliente {
+        border-color: #16a34a;
+      }
+
+      .modal-card.border-satisfactorio {
+        border-color: #facc15;
+      }
+
+      .modal-card.border-minimo {
+        border-color: #dc2626;
+      }
+
+      .modal-card.border-precario {
+        border-color: #334155;
+      }
+
+      .modal-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 14px;
+        border-bottom: 1px solid #e2e8f0;
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        font-size: 14px;
+        color: #ffffff;
+      }
+
+      .modal-title-wrap {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .modal-icon {
+        width: 34px;
+        height: 34px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 17px;
+      }
+
+      .modal-text {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .modal-summary {
+        font-size: 12px;
+        color: #e2e8f0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      .summary-chip {
+        background: rgba(255, 255, 255, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        border-radius: 999px;
+        padding: 3px 8px;
+      }
+
+      .summary-chip.category-sobresaliente {
+        background: #16a34a;
+        border-color: #15803d;
+        color: #ffffff;
+      }
+
+      .summary-chip.category-satisfactorio {
+        background: #facc15;
+        border-color: #ca8a04;
+        color: #1f2937;
+      }
+
+      .summary-chip.category-minimo {
+        background: #dc2626;
+        border-color: #991b1b;
+        color: #ffffff;
+      }
+
+      .summary-chip.category-precario {
+        background: #334155;
+        border-color: #1e293b;
+        color: #ffffff;
+      }
+
+      .modal-close {
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        background: rgba(255, 255, 255, 0.12);
+        color: #ffffff;
+        border-radius: 8px;
+        padding: 6px 10px;
+        cursor: pointer;
+        font-size: 13px;
+      }
+
+      .modal-close:hover {
+        background: rgba(255, 255, 255, 0.2);
+      }
+
+      #municipality-map {
+        width: 100%;
+        height: 100%;
+      }
+
+      .map-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        overflow: hidden;
+        min-height: 0;
+        display: grid;
+        grid-template-rows: auto 1fr;
+      }
+
+      .map-header {
+        padding: 10px 14px;
+        border-bottom: 1px solid #e2e8f0;
+        font-size: 14px;
+        color: #334155;
+        background: #f8fafc;
+      }
+
+      #map {
+        width: 100%;
+        height: 100%;
+      }
+
+      .case-icon {
+        width: 28px;
+        height: 28px;
+        border-radius: 999px;
+        background: #b91c1c;
+        border: 2px solid #ffffff;
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 15px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+      }
+
+      .footer {
+        border-top: 1px solid #e2e8f0;
+        background: #ffffff;
+        color: #475569;
+        font-size: 13px;
+        padding: 10px 14px;
+      }
+
+      @media (max-width: 900px) {
+        .content {
+          grid-template-columns: 1fr;
+        }
+
+        .map-card {
+          min-height: 520px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <header class="hero">
+        <h1>Mapa de Rabia 2025 - Hidalgo</h1>
+        <p>Visualización de contorno estatal, municipios y casos confirmados.</p>
+      </header>
+
+      <main class="content">
+        <aside class="sidebar">
+          <h2>Panel lateral</h2>
+          <ul>
+            <li>Capas disponibles en el control del mapa.</li>
+            <li>Los casos se visualizan con agrupamiento por zoom.</li>
+            <li>Haz clic en un municipio para abrir su detalle.</li>
+          </ul>
+          <div class="stat"><b>Casos cargados:</b> <span id="cases-count">0</span></div>
+          <div class="legend">
+            <h3>Leyenda cobertura (%)</h3>
+            <div class="legend-item">
+              <span class="legend-color" style="background:#16a34a"></span>
+              <span>80 a 100 · Sobresaliente</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-color" style="background:#facc15"></span>
+              <span>70 a 79 · Satisfactorio</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-color" style="background:#dc2626"></span>
+              <span>60 a 69 · Mínimo</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-color" style="background:#334155"></span>
+              <span>Menor a 60 · Precario</span>
+            </div>
+          </div>
+          <button id="cluster-toggle" class="toggle-btn" type="button">
+            Desactivar clusterización
+          </button>
+        </aside>
+
+        <section class="map-card">
+          <div class="map-header">Mapa interactivo</div>
+          <div id="map"></div>
+        </section>
+      </main>
+
+      <footer class="footer">
+         · Prototipo de monitoreo de rabia · 2026
+      </footer>
+    </div>
+
+    <div id="municipality-modal" class="modal-backdrop" aria-hidden="true">
+      <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="municipality-title">
+        <div class="modal-header">
+          <div class="modal-title-wrap">
+            <span class="modal-icon">🗺️</span>
+            <div class="modal-text">
+              <strong id="municipality-title">Detalle del municipio</strong>
+              <span id="municipality-summary" class="modal-summary">
+                <span class="summary-chip">Cobertura: --</span>
+                <span class="summary-chip">Categoría: --</span>
+                <span class="summary-chip">Casos: --</span>
+              </span>
+            </div>
+          </div>
+          <button id="municipality-close" class="modal-close" type="button">Cerrar</button>
+        </div>
+        <div id="municipality-map"></div>
+      </div>
+    </div>
+
+    <script
+      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+      crossorigin=""
+    ></script>
+    <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
+    <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+    <script>
+      const map = L.map("map").setView([20.5, -98.9], 8);
+
+      const osm = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19,
+        attribution: "&copy; OpenStreetMap contributors",
+      }).addTo(map);
+
+      const layerControl = L.control.layers(
+        { OpenStreetMap: osm },
+        {},
+        { collapsed: false }
+      ).addTo(map);
+
+      let clustersEnabled = true;
+      let clustersLayer = null;
+      let casesPointsLayer = null;
+      let casesGeojson = null;
+      let municipalityDetailMap = null;
+      let municipalityPolygonLayer = null;
+      let municipalityCasesLayer = null;
+      let mainMapViewBeforeModal = null;
+
+      function escapeHtml(value) {
+        return String(value ?? "")
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#039;");
+      }
+
+      function formatDate(value) {
+        if (!value) {
+          return "Sin dato";
+        }
+        const text = String(value);
+        return text.replace(" 00:00:00", "");
+      }
+
+      function normalizeText(value) {
+        return String(value ?? "")
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .trim()
+          .toUpperCase();
+      }
+
+      const caseIcon = L.divIcon({
+        html: '<div class="case-icon">☣</div>',
+        className: "",
+        iconSize: [28, 28],
+        iconAnchor: [14, 14],
+      });
+
+      function municipalityColor(category) {
+        if (category === "Sobresaliente") {
+          return "#16a34a";
+        }
+        if (category === "Satisfactorio") {
+          return "#facc15";
+        }
+        if (category === "Mínimo") {
+          return "#dc2626";
+        }
+        if (category === "Precario") {
+          return "#334155";
+        }
+        return "#94a3b8";
+      }
+
+      function categoryChipClass(category) {
+        if (category === "Sobresaliente") {
+          return "category-sobresaliente";
+        }
+        if (category === "Satisfactorio") {
+          return "category-satisfactorio";
+        }
+        if (category === "Mínimo") {
+          return "category-minimo";
+        }
+        if (category === "Precario") {
+          return "category-precario";
+        }
+        return "";
+      }
+
+      function categoryBorderClass(category) {
+        if (category === "Sobresaliente") {
+          return "border-sobresaliente";
+        }
+        if (category === "Satisfactorio") {
+          return "border-satisfactorio";
+        }
+        if (category === "Mínimo") {
+          return "border-minimo";
+        }
+        if (category === "Precario") {
+          return "border-precario";
+        }
+        return "";
+      }
+
+      function closeMunicipalityModal() {
+        const modal = document.getElementById("municipality-modal");
+        modal.classList.remove("active");
+        modal.setAttribute("aria-hidden", "true");
+
+        if (mainMapViewBeforeModal) {
+          map.setView(mainMapViewBeforeModal.center, mainMapViewBeforeModal.zoom, {
+            animate: true,
+          });
+          mainMapViewBeforeModal = null;
+        }
+      }
+
+      function openMunicipalityModal(feature, sourceLayer) {
+        const modal = document.getElementById("municipality-modal");
+        const modalCard = modal.querySelector(".modal-card");
+        const title = document.getElementById("municipality-title");
+        const summary = document.getElementById("municipality-summary");
+        const municipio = feature?.properties?.NOM_MUN || "Municipio";
+        const category = feature?.properties?.coverage_category || "Sin dato";
+        title.textContent = `Detalle: ${municipio}`;
+
+        modalCard.classList.remove(
+          "border-sobresaliente",
+          "border-satisfactorio",
+          "border-minimo",
+          "border-precario"
+        );
+        const borderClass = categoryBorderClass(category);
+        if (borderClass) {
+          modalCard.classList.add(borderClass);
+        }
+
+        if (!modal.classList.contains("active")) {
+          mainMapViewBeforeModal = {
+            center: map.getCenter(),
+            zoom: map.getZoom(),
+          };
+        }
+
+        if (sourceLayer) {
+          map.fitBounds(sourceLayer.getBounds(), { padding: [20, 20] });
+        }
+
+        modal.classList.add("active");
+        modal.setAttribute("aria-hidden", "false");
+
+        if (!municipalityDetailMap) {
+          municipalityDetailMap = L.map("municipality-map");
+          L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+            maxZoom: 19,
+            attribution: "&copy; OpenStreetMap contributors",
+          }).addTo(municipalityDetailMap);
+        }
+
+        if (municipalityPolygonLayer) {
+          municipalityDetailMap.removeLayer(municipalityPolygonLayer);
+        }
+        if (municipalityCasesLayer) {
+          municipalityDetailMap.removeLayer(municipalityCasesLayer);
+        }
+
+        municipalityPolygonLayer = L.geoJSON(feature, {
+          style: {
+            color: "#0f172a",
+            weight: 2,
+            fillColor: municipalityColor(feature?.properties?.coverage_category),
+            fillOpacity: 0.35,
+          },
+        }).addTo(municipalityDetailMap);
+
+        if (casesGeojson?.features?.length) {
+          const municipioNorm = normalizeText(municipio);
+          const filteredCases = {
+            type: "FeatureCollection",
+            features: casesGeojson.features.filter((item) => {
+              const itemMunicipio = item?.properties?.Municipio || item?.properties?.municipio_norm || "";
+              const sameName = normalizeText(itemMunicipio) === municipioNorm;
+
+              if (sameName) {
+                return true;
+              }
+
+              try {
+                return turf.booleanPointInPolygon(item, feature);
+              } catch (_) {
+                return false;
+              }
+            }),
+          };
+
+          const coordinateCounter = new Map();
+          const localityCounter = new Map();
+          for (const caseItem of filteredCases.features) {
+            const coords = caseItem?.geometry?.coordinates || [];
+            const key = `${coords[0]}|${coords[1]}`;
+            coordinateCounter.set(key, (coordinateCounter.get(key) || 0) + 1);
+
+            const localityName = normalizeText(
+              caseItem?.properties?.Localidad ||
+                caseItem?.properties?.localidad_norm_ajustada ||
+                caseItem?.properties?.localidad_norm ||
+                "SIN DATO"
+            );
+            localityCounter.set(localityName, (localityCounter.get(localityName) || 0) + 1);
+          }
+
+          const coordinateIndex = new Map();
+
+          municipalityCasesLayer = L.geoJSON(filteredCases, {
+            pointToLayer: (caseFeature, latlng) => {
+              const coords = caseFeature?.geometry?.coordinates || [];
+              const key = `${coords[0]}|${coords[1]}`;
+              const totalOnSameCoordinate = coordinateCounter.get(key) || 1;
+              const currentIndex = coordinateIndex.get(key) || 0;
+              coordinateIndex.set(key, currentIndex + 1);
+
+              if (totalOnSameCoordinate === 1) {
+                return L.marker(latlng, { icon: caseIcon });
+              }
+
+              const angle = (2 * Math.PI * currentIndex) / totalOnSameCoordinate;
+              const radius = 0.00045;
+              const adjustedLatLng = L.latLng(
+                latlng.lat + radius * Math.sin(angle),
+                latlng.lng + radius * Math.cos(angle)
+              );
+
+              return L.marker(adjustedLatLng, { icon: caseIcon });
+            },
+            onEachFeature: (caseFeature, layer) => {
+              const properties = caseFeature.properties || {};
+              const fecha = escapeHtml(formatDate(properties.Fecha));
+              const folioLesph = escapeHtml(properties["Folio LESPH"] || "Sin dato");
+              const localidad = escapeHtml(
+                properties.Localidad || properties.localidad_norm_ajustada || properties.localidad_norm || "Sin dato"
+              );
+              const localityNorm = normalizeText(
+                properties.Localidad || properties.localidad_norm_ajustada || properties.localidad_norm || "SIN DATO"
+              );
+              const sameLocalityCount = localityCounter.get(localityNorm) || 1;
+
+              const popup = `
+                <b>Fecha:</b> ${fecha}<br>
+                <b>Folio LESPH:</b> ${folioLesph}<br>
+                <b>Localidad:</b> ${localidad}<br>
+                <b>Casos en esta localidad:</b> ${sameLocalityCount}
+              `;
+              layer.bindPopup(popup);
+            },
+          }).addTo(municipalityDetailMap);
+
+          const coverage = feature?.properties?.coverage_percentage;
+          const coverageText =
+            typeof coverage === "number"
+              ? `${coverage.toFixed(2)}%`
+              : "Sin dato";
+          const categoryClass = categoryChipClass(category);
+          summary.innerHTML = `
+            <span class="summary-chip">Cobertura: ${escapeHtml(coverageText)}</span>
+            <span class="summary-chip ${categoryClass}">Categoría: ${escapeHtml(category)}</span>
+            <span class="summary-chip">Casos: ${filteredCases.features.length}</span>
+          `;
+        } else {
+          const coverage = feature?.properties?.coverage_percentage;
+          const coverageText =
+            typeof coverage === "number"
+              ? `${coverage.toFixed(2)}%`
+              : "Sin dato";
+          const category = feature?.properties?.coverage_category || "Sin dato";
+          const categoryClass = categoryChipClass(category);
+          summary.innerHTML = `
+            <span class="summary-chip">Cobertura: ${escapeHtml(coverageText)}</span>
+            <span class="summary-chip ${categoryClass}">Categoría: ${escapeHtml(category)}</span>
+            <span class="summary-chip">Casos: 0</span>
+          `;
+        }
+
+        municipalityDetailMap.fitBounds(municipalityPolygonLayer.getBounds(), { padding: [20, 20] });
+        setTimeout(() => municipalityDetailMap.invalidateSize(), 120);
+      }
+
+      document.getElementById("municipality-close").addEventListener("click", closeMunicipalityModal);
+      document.getElementById("municipality-modal").addEventListener("click", (event) => {
+        if (event.target.id === "municipality-modal") {
+          closeMunicipalityModal();
+        }
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") {
+          closeMunicipalityModal();
+        }
+      });
+
+      fetch("/static/data/hidalgo_contorno.geojson")
+        .then((response) => response.json())
+        .then((data) => {
+          const stateLayer = L.geoJSON(data, {
+            style: {
+              color: "#7f1d1d",
+              weight: 3,
+              fillOpacity: 0,
+            },
+          }).addTo(map);
+
+          layerControl.addOverlay(stateLayer, "Contorno Hidalgo");
+          map.fitBounds(stateLayer.getBounds());
+        })
+        .catch((error) => console.error("Error cargando contorno estatal:", error));
+
+      fetch("/static/data/municipios_hidalgo_cobertura_2025.geojson")
+        .then((response) => response.json())
+        .then((data) => {
+          const municipalitiesLayer = L.geoJSON(data, {
+            style: (feature) => {
+              const category = feature?.properties?.coverage_category;
+              return {
+                color: "#1f2937",
+                weight: 0.8,
+                fillColor: municipalityColor(category),
+                fillOpacity: 0.62,
+              };
+            },
+            onEachFeature: (feature, layer) => {
+              const properties = feature.properties || {};
+              const municipio = escapeHtml(properties.NOM_MUN || "Sin dato");
+              const coverage = properties.coverage_percentage;
+              const coverageText =
+                typeof coverage === "number"
+                  ? `${coverage.toFixed(2)}%`
+                  : "Sin dato";
+              const category = escapeHtml(properties.coverage_category || "Sin dato");
+
+              const popup = `
+                <b>Municipio:</b> ${municipio}<br>
+                <b>Cobertura:</b> ${coverageText}<br>
+                <b>Categoría:</b> ${category}
+              `;
+              layer.bindPopup(popup);
+              layer.on("click", () => {
+                openMunicipalityModal(feature, layer);
+              });
+            },
+          }).addTo(map);
+
+          layerControl.addOverlay(municipalitiesLayer, "Cobertura municipal 2025");
+        })
+        .catch((error) => console.error("Error cargando municipios:", error));
+
+      fetch("/static/data/casos_rabia_2025.geojson")
+        .then((response) => response.json())
+        .then((data) => {
+          casesGeojson = data;
+          document.getElementById("cases-count").textContent = String(data.features?.length || 0);
+
+          const casesLayer = L.geoJSON(data, {
+            pointToLayer: (_, latlng) => L.marker(latlng, { icon: caseIcon }),
+            onEachFeature: (feature, layer) => {
+              const properties = feature.properties || {};
+              const fecha = escapeHtml(formatDate(properties.Fecha));
+              const folioLesph = escapeHtml(properties["Folio LESPH"] || "Sin dato");
+              const jurisdiccion = escapeHtml(
+                properties["Jurisdiccion Sanitaria"] || properties["Jurisdicción Sanitaria"] || "Sin dato"
+              );
+              const municipio = escapeHtml(properties.Municipio || properties.municipio_norm || "Sin dato");
+              const localidad = escapeHtml(
+                properties.Localidad || properties.localidad_norm_ajustada || properties.localidad_norm || "Sin dato"
+              );
+
+              const popup = `
+                <b>Fecha:</b> ${fecha}<br>
+                <b>Folio LESPH:</b> ${folioLesph}<br>
+                <b>Jurisdicción Sanitaria:</b> ${jurisdiccion}<br>
+                <b>Municipio:</b> ${municipio}<br>
+                <b>Localidad:</b> ${localidad}
+              `;
+              layer.bindPopup(popup);
+            },
+          });
+
+          clustersLayer = L.markerClusterGroup({
+            showCoverageOnHover: false,
+            spiderfyOnMaxZoom: true,
+          });
+          clustersLayer.addLayer(casesLayer);
+          casesPointsLayer = casesLayer;
+
+          map.addLayer(clustersLayer);
+
+          const clusterButton = document.getElementById("cluster-toggle");
+          clusterButton.addEventListener("click", () => {
+            if (!clustersLayer || !casesPointsLayer) {
+              return;
+            }
+
+            if (clustersEnabled) {
+              map.removeLayer(clustersLayer);
+              map.addLayer(casesPointsLayer);
+              clusterButton.textContent = "Activar clusterización";
+              clustersEnabled = false;
+            } else {
+              map.removeLayer(casesPointsLayer);
+              map.addLayer(clustersLayer);
+              clusterButton.textContent = "Desactivar clusterización";
+              clustersEnabled = true;
+            }
+          });
+
+          layerControl.addOverlay(clustersLayer, "Casos 2025");
+        })
+        .catch((error) => console.error("Error cargando casos 2025:", error));
+
+      window.addEventListener("load", () => {
+        setTimeout(() => map.invalidateSize(), 150);
+      });
+    </script>
+  </body>
+</html>
