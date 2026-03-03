@@ -16,7 +16,7 @@
       body {
         margin: 0;
         font-family: Arial, sans-serif;
-        background: #f8fafc;
+        background: radial-gradient(circle at top, #e2e8f0 0%, #f8fafc 35%, #f8fafc 100%);
         color: #0f172a;
       }
 
@@ -27,43 +27,99 @@
       }
 
       .hero {
-        background: #0f172a;
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 70%, #334155 100%);
         color: #ffffff;
-        padding: 22px;
+        padding: 34px 24px;
+        border-bottom: 1px solid #1e293b;
+      }
+
+      .hero-wrap {
+        width: min(1080px, 92vw);
+        margin: 0 auto;
+      }
+
+      .hero-tag {
+        display: inline-block;
+        margin-bottom: 12px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        border: 1px solid #ffffff3d;
+        background: #ffffff1c;
+        font-size: 12px;
+        letter-spacing: 0.3px;
       }
 
       .hero h1 {
         margin: 0;
-        font-size: 28px;
+        font-size: clamp(28px, 4vw, 38px);
       }
 
       .hero p {
-        margin: 8px 0 0;
-        font-size: 15px;
-        opacity: 0.95;
+        margin: 10px 0 0;
+        font-size: 16px;
+        opacity: 0.9;
+        max-width: 760px;
       }
 
       .content {
-        width: min(980px, 92vw);
-        margin: 28px auto;
+        width: min(1080px, 92vw);
+        margin: 26px auto 34px;
         display: grid;
-        gap: 16px;
+        gap: 18px;
+      }
+
+      .intro {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        padding: 14px 16px;
+        color: #334155;
+        font-size: 14px;
       }
 
       .cards {
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 14px;
+        gap: 18px;
       }
 
       .card {
-        background: #ffffff;
+        background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
         border: 1px solid #e2e8f0;
-        border-radius: 12px;
-        padding: 18px;
+        border-radius: 16px;
+        padding: 20px;
         display: grid;
         justify-items: center;
         text-align: center;
+        gap: 8px;
+        box-shadow: 0 12px 24px -22px #0f172a;
+        transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+      }
+
+      .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 18px 30px -20px #0f172a;
+        border-color: #cbd5e1;
+      }
+
+      .status {
+        font-size: 12px;
+        font-weight: 700;
+        padding: 6px 10px;
+        border-radius: 999px;
+        border: 1px solid;
+      }
+
+      .status.active {
+        color: #166534;
+        background: #dcfce7;
+        border-color: #86efac;
+      }
+
+      .status.pending {
+        color: #92400e;
+        background: #fef3c7;
+        border-color: #fde68a;
       }
 
       .card h2 {
@@ -77,11 +133,13 @@
         justify-content: center;
         width: 220px;
         height: 120px;
-        border: 1px solid #cbd5e1;
+        border: 1px solid #dbe2ea;
         border-radius: 12px;
         background: #ffffff;
         text-decoration: none;
         overflow: hidden;
+        box-shadow: 0 8px 16px -14px #0f172a;
+        transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
       }
 
       .icon-link img {
@@ -91,7 +149,9 @@
       }
 
       .icon-link:hover {
-        border-color: #94a3b8;
+        border-color: #64748b;
+        transform: scale(1.03);
+        box-shadow: 0 12px 24px -14px #0f172a;
       }
 
       .icon-row {
@@ -99,10 +159,11 @@
       }
 
       .card p {
-        margin: 10px 0 16px;
+        margin: 2px 0 8px;
         color: #334155;
         font-size: 14px;
         line-height: 1.5;
+        max-width: 40ch;
       }
 
       .footer {
@@ -110,12 +171,22 @@
         background: #ffffff;
         color: #475569;
         font-size: 13px;
-        padding: 10px 16px;
+        padding: 12px 16px;
+        text-align: center;
       }
 
       @media (max-width: 900px) {
         .cards {
           grid-template-columns: 1fr;
+        }
+
+        .hero {
+          padding: 26px 18px;
+        }
+
+        .icon-link {
+          width: min(100%, 320px);
+          height: 140px;
         }
       }
     </style>
@@ -123,13 +194,21 @@
   <body>
     <div class="page">
       <header class="hero">
-        <h1>Mapas de Zoonosis</h1>
-        <p>Selecciona el módulo que deseas consultar.</p>
+        <div class="hero-wrap">
+          <span class="hero-tag">Plataforma de Vigilancia · Hidalgo 2026</span>
+          <h1>Mapas de Zoonosis</h1>
+          <p>Accede a los tableros geográficos para seguimiento epidemiológico y toma de decisiones.</p>
+        </div>
       </header>
 
       <main class="content">
+        <section class="intro">
+          Selecciona una sección para abrir su mapa. Cada módulo mantiene su propio flujo de consulta.
+        </section>
+
         <section class="cards">
           <article class="card">
+            <span class="status active">Disponible</span>
             <h2>Mapa de casos de rabia</h2>
             <p>Visualización actual de casos y cobertura de vacunación por municipio en Hidalgo.</p>
             <div class="icon-row">
@@ -140,8 +219,9 @@
           </article>
 
           <article class="card">
+            <span class="status pending">En desarrollo</span>
             <h2>Mapa de casos de gusano barrenador</h2>
-            <p>Sección en desarrollo.</p>
+            <p>Módulo en construcción para seguimiento de casos y análisis espacial.</p>
             <div class="icon-row">
               <a
                 class="icon-link"
